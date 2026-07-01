@@ -126,7 +126,7 @@ namespace CelebrateHubMVC.Controllers
         {
             await _api.DeletePartyEventAsync(id);
             TempData["Success"] = "Event deactivated.";
-            return RedirectToAction("Analytics");
+            return RedirectToAction("Analytics"); 
         }
     }
 }
