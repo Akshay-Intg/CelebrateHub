@@ -33,7 +33,6 @@ BirthdayPortal/
 1. Update connection string in `appsettings.json` for both API and MVC projects
 2. Run `dotnet ef database update` from the API project to apply migrations
 3. Run both projects (API on port 5001, MVC on port 5000)
-4. Default admin: admin@portal.com / Admin@123
 
 ## Technologies
 
