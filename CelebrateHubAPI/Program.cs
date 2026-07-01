@@ -94,21 +94,28 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//    db.Database.Migrate();
+//}
 
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI(c =>
+//    {
+//        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CelebrateHub API v1");
+//        c.RoutePrefix = "swagger";   // access at /swagger
+//    });
+//}
+app.UseSwagger();
+
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CelebrateHub API v1");
-        c.RoutePrefix = "swagger";   // access at /swagger
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "CelebrateHub API v1");
+    c.RoutePrefix = "swagger";
+});
 
 app.UseCors("PortalCors");
 app.UseHttpsRedirection();
