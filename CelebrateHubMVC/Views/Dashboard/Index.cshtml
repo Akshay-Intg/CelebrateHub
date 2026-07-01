@@ -1,0 +1,188 @@
+﻿@* BirthdayPortal.MVC/Views/Dashboard/Index.cshtml *@
+@using CelebrateHub.Services.DTOs
+@model DashboardDto
+@{
+    ViewData["Title"] = "Dashboard"; Layout = "_Layout";
+}
+
+<!-- ── Stats Row ──────────────────────────────────────────────────────────── -->
+<div class="row g-3 mb-4 stagger">
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-card-blue">
+            <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+            <div class="stat-value">@Model.TotalEmployees</div>
+            <div class="stat-label">Total Employees</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-card-pink">
+            <div class="stat-icon">🎂</div>
+            <div class="stat-value">@Model.TodaysBirthdays.Count()</div>
+            <div class="stat-label">Birthdays Today</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-card-purple">
+            <div class="stat-icon">💐</div>
+            <div class="stat-value">@Model.TodaysAnniversaries.Count()</div>
+            <div class="stat-label">Anniversaries Today</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-card-green">
+            <div class="stat-icon"><i class="bi bi-calendar-week"></i></div>
+            <div class="stat-value">@(Model.UpcomingBirthdays.Count() + Model.UpcomingAnniversaries.Count())</div>
+            <div class="stat-label">Events This Week</div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Today's Birthdays ──────────────────────────────────────────────────── -->
+<div class="row g-3 mb-3">
+    <div class="col-12 col-lg-6">
+        <div class="card portal-card h-100">
+            <div class="card-header portal-card-header">
+                <h6 class="mb-0">🎂 Today's Birthdays</h6>
+                <span class="badge bg-pink">@Model.TodaysBirthdays.Count()</span>
+            </div>
+            <div class="card-body p-0">
+                @if (!Model.TodaysBirthdays.Any())
+                {
+                    <div class="empty-state">
+                        <i class="bi bi-calendar-x"></i>
+                        <p>No birthdays today</p>
+                    </div>
+                }
+                else
+                {
+                    <ul class="celebration-list">
+                        @foreach (var b in Model.TodaysBirthdays)
+                        {
+                            <li class="celebration-item celebration-today">
+                                <div class="cel-avatar">@b.Name.Substring(0, 1)</div>
+                                <div class="cel-info">
+                                    <div class="cel-name">@b.Name</div>
+                                    <div class="cel-meta">@(b.Department ?? "No Department") · Turns @b.TurningAge</div>
+                                </div>
+                                <div class="cel-badge">🎉 Today!</div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Today's Anniversaries ──────────────────────────────────────────── -->
+    <div class="col-12 col-lg-6">
+        <div class="card portal-card h-100">
+            <div class="card-header portal-card-header">
+                <h6 class="mb-0">💐 Today's Anniversaries</h6>
+                <span class="badge bg-purple">@Model.TodaysAnniversaries.Count()</span>
+            </div>
+            <div class="card-body p-0">
+                @if (!Model.TodaysAnniversaries.Any())
+                {
+                    <div class="empty-state">
+                        <i class="bi bi-calendar-x"></i>
+                        <p>No anniversaries today</p>
+                    </div>
+                }
+                else
+                {
+                    <ul class="celebration-list">
+                        @foreach (var a in Model.TodaysAnniversaries)
+                        {
+                            <li class="celebration-item celebration-today">
+                                <div class="cel-avatar cel-avatar-purple">@a.Name.Substring(0, 1)</div>
+                                <div class="cel-info">
+                                    <div class="cel-name">@a.Name</div>
+                                    <div class="cel-meta">@(a.Department ?? "No Department") · @a.YearsCompleting yr@(a.YearsCompleting != 1 ? "s" : "")</div>
+                                </div>
+                                <div class="cel-badge cel-badge-purple">🌟 Today!</div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Upcoming Birthdays ─────────────────────────────────────────────────── -->
+<div class="row g-3">
+    <div class="col-12 col-lg-6">
+        <div class="card portal-card">
+            <div class="card-header portal-card-header">
+                <h6 class="mb-0">📅 Upcoming Birthdays <small class="text-muted fw-normal">(next 7 days)</small></h6>
+                <span class="badge bg-secondary">@Model.UpcomingBirthdays.Count()</span>
+            </div>
+            <div class="card-body p-0">
+                @if (!Model.UpcomingBirthdays.Any())
+                {
+                    <div class="empty-state">
+                        <i class="bi bi-calendar-check"></i>
+                        <p>No upcoming birthdays in the next 7 days</p>
+                    </div>
+                }
+                else
+                {
+                    <ul class="celebration-list">
+                        @foreach (var b in Model.UpcomingBirthdays)
+                        {
+                            <li class="celebration-item">
+                                <div class="cel-avatar cel-avatar-muted">@b.Name.Substring(0, 1)</div>
+                                <div class="cel-info">
+                                    <div class="cel-name">@b.Name</div>
+                                    <div class="cel-meta">@b.DateOfBirth.ToString("MMM dd") · @(b.Department ?? "—")</div>
+                                </div>
+                                <div class="days-badge">
+                                    <span class="days-number">@b.DaysUntil</span>
+                                    <span class="days-label">day@(b.DaysUntil != 1 ? "s" : "")</span>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Upcoming Anniversaries ─────────────────────────────────────────── -->
+    <div class="col-12 col-lg-6">
+        <div class="card portal-card">
+            <div class="card-header portal-card-header">
+                <h6 class="mb-0">🗓️ Upcoming Anniversaries <small class="text-muted fw-normal">(next 7 days)</small></h6>
+                <span class="badge bg-secondary">@Model.UpcomingAnniversaries.Count()</span>
+            </div>
+            <div class="card-body p-0">
+                @if (!Model.UpcomingAnniversaries.Any())
+                {
+                    <div class="empty-state">
+                        <i class="bi bi-calendar-check"></i>
+                        <p>No upcoming anniversaries in the next 7 days</p>
+                    </div>
+                }
+                else
+                {
+                    <ul class="celebration-list">
+                        @foreach (var a in Model.UpcomingAnniversaries)
+                        {
+                            <li class="celebration-item">
+                                <div class="cel-avatar cel-avatar-muted">@a.Name.Substring(0, 1)</div>
+                                <div class="cel-info">
+                                    <div class="cel-name">@a.Name</div>
+                                    <div class="cel-meta">@a.AnniversaryDate.ToString("MMM dd") · @a.YearsCompleting yr@(a.YearsCompleting != 1 ? "s" : "")</div>
+                                </div>
+                                <div class="days-badge days-badge-purple">
+                                    <span class="days-number">@a.DaysUntil</span>
+                                    <span class="days-label">day@(a.DaysUntil != 1 ? "s" : "")</span>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>

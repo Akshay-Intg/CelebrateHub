@@ -1,0 +1,197 @@
+﻿<div class="modal fade" id="partyReminderModal" tabindex="-1"
+     aria-labelledby="partyReminderModalLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content reminder-modal-content">
+
+            @* Animated confetti header *@
+            <div class="reminder-modal-header">
+                <div class="reminder-confetti">🎉🎂🎉</div>
+                <h5 class="reminder-modal-title" id="partyReminderModalLabel">
+                    Party Reminder
+                </h5>
+            </div>
+
+            <div class="modal-body reminder-modal-body" id="reminderModalBody">
+                @* Populated dynamically by JavaScript *@
+                <div class="text-center py-3">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer reminder-modal-footer">
+                <div class="reminder-note">
+                    <i class="bi bi-info-circle me-1"></i>
+                    This reminder appears every time you visit the dashboard until
+                    <strong>75% of your team</strong> confirms the party is done.
+                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm"
+                        data-bs-dismiss="modal">
+                    Got it — I'll arrange it
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@* ── Navigation indicator dots for multiple reminders ──────────────────── *@
+<div id="reminderNav" class="reminder-nav" style="display:none;">
+    @* Dots injected by JS *@
+</div>
+
+<script>
+    // ============================================================
+    // Party Reminder Popup Logic
+    // Runs on every page load for authenticated users.
+    // Fetches /Party/MyReminders; shows modal if any pending events.
+    // CANNOT be permanently dismissed — reappears on every load.
+    // ============================================================
+    (function () {
+        'use strict';
+
+        var reminders   = [];
+        var currentIdx  = 0;
+        var modalEl     = document.getElementById('partyReminderModal');
+        var bodyEl      = document.getElementById('reminderModalBody');
+        var navEl       = document.getElementById('reminderNav');
+
+        if (!modalEl) return; // safety: only runs on auth'd pages
+
+        // Fetch reminders via AJAX after a short delay so page renders first
+        setTimeout(fetchReminders, 800);
+
+        function fetchReminders() {
+            $.ajax({
+                url: '/Party/MyReminders',
+                type: 'GET',
+                success: function (data) {
+                    if (data && data.length > 0) {
+                        reminders = data;
+                        currentIdx = 0;
+                        renderReminder(0);
+                        buildNav();
+                        var modal = new bootstrap.Modal(modalEl, {
+                            backdrop: 'static',  // clicking outside doesn't close
+                            keyboard: false      // Esc doesn't close
+                        });
+                        modal.show();
+                    }
+                },
+                error: function () {
+                    // Silently fail — non-critical feature
+                }
+            });
+        }
+
+        function renderReminder(idx) {
+            var r = reminders[idx];
+            if (!r) return;
+
+            var pct     = parseFloat(r.donePercentage).toFixed(0);
+            var pending = (100 - parseFloat(r.donePercentage)).toFixed(0);
+            var barClass = pct >= 75 ? 'bg-success' : pct >= 50 ? 'bg-warning' : 'bg-danger';
+
+            var html = [
+                '<div class="reminder-content">',
+
+                // Event badge
+                '<div class="text-center mb-3">',
+                '  <span class="reminder-event-type-badge">',
+                '    ' + (r.eventType === 'Birthday' ? '🎂' : '💐'),
+                '    ' + r.eventType + ' Event',
+                '  </span>',
+                '</div>',
+
+                // Employee & date
+                '<div class="reminder-employee-card">',
+                '  <div class="reminder-avatar">' + r.employeeName.charAt(0) + '</div>',
+                '  <div>',
+                '    <div class="fw-bold">' + escHtml(r.employeeName) + '</div>',
+                '    <div class="small text-muted">' + formatDate(r.eventDate) + '</div>',
+                '  </div>',
+                '</div>',
+
+                // Message
+                '<div class="reminder-message-box">',
+                '  <p class="mb-2">',
+                '    Hi <strong>' + escHtml(r.employeeName) + '</strong>,',
+                '    your <strong>' + escHtml(r.eventType) + '</strong> celebration is still',
+                '    <span class="text-danger fw-semibold">Pending</span> according to your team.',
+                '  </p>',
+                '  <p class="mb-0 small text-muted">Please arrange a team party to clear this reminder.</p>',
+                '</div>',
+
+                // Progress bar
+                '<div class="reminder-progress-section">',
+                '  <div class="d-flex justify-content-between mb-1">',
+                '    <span class="small fw-semibold">Current Team Approval</span>',
+                '    <span class="small fw-bold text-' + (pct >= 75 ? 'success' : 'danger') + '">' + pct + '% Done</span>',
+                '  </div>',
+                '  <div class="progress reminder-progress">',
+                '    <div class="progress-bar ' + barClass + '" style="width:' + pct + '%"></div>',
+                '  </div>',
+                '  <div class="d-flex justify-content-between mt-1">',
+                '    <span class="small text-success">✅ ' + pct + '% Party Done</span>',
+                '    <span class="small text-danger">❌ ' + pending + '% Pending</span>',
+                '  </div>',
+                '  <div class="reminder-threshold-note">',
+                '    <i class="bi bi-bullseye me-1"></i>',
+                '    This reminder stops when <strong>75%</strong> of the team marks it Done.',
+                '  </div>',
+                '</div>',
+
+                // Nav buttons if multiple reminders
+                reminders.length > 1 ? [
+                    '<div class="d-flex justify-content-between mt-3">',
+                    '  <button class="btn btn-sm btn-outline-secondary" onclick="prevReminder()" ' + (idx === 0 ? 'disabled' : '') + '>← Prev</button>',
+                    '  <span class="small text-muted align-self-center">' + (idx+1) + ' of ' + reminders.length + '</span>',
+                    '  <button class="btn btn-sm btn-outline-secondary" onclick="nextReminder()" ' + (idx === reminders.length - 1 ? 'disabled' : '') + '>Next →</button>',
+                    '</div>'
+                ].join('') : '',
+
+                '</div>'
+            ].join('\n');
+
+            bodyEl.innerHTML = html;
+
+            // Highlight the active nav dot
+            var dots = navEl.querySelectorAll('.reminder-dot');
+            dots.forEach(function (d, i) {
+                d.classList.toggle('reminder-dot-active', i === idx);
+            });
+        }
+
+        function buildNav() {
+            if (reminders.length <= 1) return;
+            navEl.innerHTML = reminders.map(function (_, i) {
+                return '<span class="reminder-dot" onclick="goReminder(' + i + ')"></span>';
+            }).join('');
+            navEl.style.display = 'flex';
+        }
+
+        // Exposed globally for inline onclick
+        window.nextReminder = function () {
+            if (currentIdx < reminders.length - 1) renderReminder(++currentIdx);
+        };
+        window.prevReminder = function () {
+            if (currentIdx > 0) renderReminder(--currentIdx);
+        };
+        window.goReminder = function (i) {
+            currentIdx = i;
+            renderReminder(i);
+        };
+
+        // Utilities
+        function escHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function formatDate(dateStr) {
+            var d = new Date(dateStr);
+            return d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+        }
+
+    })();
+</script>

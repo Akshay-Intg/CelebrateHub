@@ -1,0 +1,75 @@
+﻿@* ============================================================
+   BirthdayPortal.MVC/Views/Party/Index.cshtml
+   Place in: BirthdayPortal.MVC → Views → Party folder
+   ============================================================ *@
+@using CelebrateHub.Services.DTOs
+@model IEnumerable<PartyEventDto>
+@{
+    ViewData["Title"] = "Party Status Voting"; Layout = "_Layout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h5 class="mb-0">🎉 Party Status Voting</h5>
+        <small class="text-muted">@Model.Count() active event@(Model.Count() != 1 ? "s" : "")</small>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Index" asp-route-filter=""
+           class="btn btn-sm @(ViewBag.Filter == null ? "btn-primary" : "btn-outline-secondary")">
+            All
+        </a>
+        <a asp-action="Index" asp-route-filter="Birthday"
+           class="btn btn-sm @(ViewBag.Filter == "Birthday" ? "btn-primary" : "btn-outline-secondary")">
+            🎂 Birthdays
+        </a>
+        <a asp-action="Index" asp-route-filter="Anniversary"
+           class="btn btn-sm @(ViewBag.Filter == "Anniversary" ? "btn-primary" : "btn-outline-secondary")">
+            💐 Anniversaries
+        </a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Analytics" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-graph-up me-1"></i>Analytics
+            </a>
+        }
+    </div>
+</div>
+
+@* ── Vote feedback toast ──────────────────────────────────────────────────── *@
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+    <div id="voteToast" class="toast align-items-center border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body fw-medium" id="toastMsg">Vote recorded!</div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card portal-card">
+        <div class="card-body text-center py-5 text-muted">
+            <div style="font-size:3rem">🎉</div>
+            <h6 class="mt-2">No party events yet</h6>
+            <p class="small mb-0">Events are auto-created when a birthday or anniversary passes.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row g-3 stagger" id="eventsContainer">
+        @foreach (var ev in Model)
+        {
+            <div class="col-12 col-md-6 col-xl-4" id="event-card-@ev.PartyEventId">
+                @await Html.PartialAsync("_PartyEventCard", ev)
+            </div>
+        }
+    </div>
+}
+
+@* ── Anti-forgery token for AJAX ─────────────────────────────────────────── *@
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script src="~/js/party-voting.js" asp-append-version="true"></script>
+}

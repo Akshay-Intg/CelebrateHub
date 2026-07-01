@@ -1,0 +1,145 @@
+﻿@* ============================================================
+   BirthdayPortal.MVC/Views/Party/Analytics.cshtml
+   Place in: BirthdayPortal.MVC → Views → Party folder
+   ============================================================ *@
+@using CelebrateHub.Services.DTOs
+@model PartyAnalyticsDto
+@{
+    ViewData["Title"] = "Party Analytics";
+    Layout = "_Layout";
+    var events = ViewBag.Events as IEnumerable<PartyEventDto> ?? Enumerable.Empty<PartyEventDto>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h5 class="mb-0"><i class="bi bi-graph-up me-2 text-danger"></i>Party Analytics</h5>
+        <small class="text-muted">Admin view — all events and vote data</small>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Back to Voting
+    </a>
+</div>
+
+@* ── Summary stat cards ─────────────────────────────────────────────────── *@
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-card-blue">
+            <div class="stat-icon"><i class="bi bi-calendar-event"></i></div>
+            <div class="stat-value">@Model.TotalEvents</div>
+            <div class="stat-label">Total Events</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-card-green">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value">@Model.CompletedEvents</div>
+            <div class="stat-label">Party Given</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-card-pink">
+            <div class="stat-icon">❌</div>
+            <div class="stat-value">@Model.PendingEvents</div>
+            <div class="stat-label">Still Pending</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-card-purple">
+            <div class="stat-icon"><i class="bi bi-hand-thumbs-up"></i></div>
+            <div class="stat-value">@Model.TotalVotesCast</div>
+            <div class="stat-label">Total Votes Cast</div>
+        </div>
+    </div>
+</div>
+
+@* ── Events table ────────────────────────────────────────────────────────── *@
+<div class="card portal-card">
+    <div class="card-header portal-card-header">
+        <h6 class="mb-0">All Party Events</h6>
+        <span class="badge bg-secondary">@events.Count() events</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table portal-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Votes</th>
+                        <th>Done %</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                        <th>Admin Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var ev in events)
+                    {
+                        var bar = ev.DonePercentage >= 75 ? "bg-success"
+                        : ev.DonePercentage >= 50 ? "bg-warning"
+                        : "bg-danger";
+                        <tr>
+                            <td>
+                                <div class="fw-medium">@ev.EmployeeName</div>
+                                <div class="small text-muted">@(ev.Department ?? "—")</div>
+                            </td>
+                            <td>
+                                <span class="badge @(ev.EventType == "Birthday" ? "bg-pink" : "bg-purple")">
+                                    @(ev.EventType == "Birthday" ? "🎂" : "💐") @ev.EventType
+                                </span>
+                            </td>
+                            <td class="small">@ev.EventDate.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <span class="text-success">✅ @ev.DoneVotes</span> /
+                                <span class="text-danger">❌ @ev.PendingVotes</span>
+                                <div class="small text-muted">@ev.TotalVotes total</div>
+                            </td>
+                            <td class="fw-semibold">@ev.DonePercentage.ToString("F0")%</td>
+                            <td style="min-width: 120px;">
+                                <div class="progress" style="height:8px; border-radius:4px;">
+                                    <div class="progress-bar @bar"
+                                         style="width:@ev.DonePercentage%"></div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge @(ev.IsPartyGiven ? "bg-success" : "bg-warning text-dark")">
+                                    @ev.StatusLabel
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1 flex-wrap">
+                                    @* Override status *@
+                                    <form asp-action="Override" asp-route-id="@ev.PartyEventId" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="newStatus"
+                                               value="@(ev.Status == "Pending" ? "Completed" : "Pending")" />
+                                        <button type="submit"
+                                                class="btn btn-xs @(ev.Status == "Pending" ? "btn-outline-success" : "btn-outline-warning")"
+                                                title="Toggle status">
+                                            <i class="bi @(ev.Status == "Pending" ? "bi-check2-circle" : "bi-arrow-counterclockwise")"></i>
+                                        </button>
+                                    </form>
+                                    @* Deactivate *@
+                                    <form asp-action="Delete" asp-route-id="@ev.PartyEventId" method="post" class="d-inline"
+                                          onsubmit="return confirm('Deactivate this event?')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-xs btn-outline-danger" title="Deactivate">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (!events.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">No events found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

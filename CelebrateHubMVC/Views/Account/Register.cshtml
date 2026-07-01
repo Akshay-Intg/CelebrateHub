@@ -1,0 +1,111 @@
+﻿@* BirthdayPortal.MVC/Views/Account/Register.cshtml *@
+@model CelebrateHubMVC.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Create Account"; Layout = "_Layout";
+}
+
+<div class="auth-card auth-card-wide">
+    <div class="auth-card-left">
+        <div class="auth-brand">
+            <div class="brand-emoji">🎂</div>
+            <h2>Birthday &amp; Anniversary Portal</h2>
+            <p>Join your team's celebration hub.</p>
+        </div>
+    </div>
+
+    <div class="auth-card-right">
+        <h3 class="mb-1">Create account</h3>
+        <p class="text-muted mb-4">Fill in your details to get started</p>
+
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label required"></label>
+                    <input asp-for="Name" class="form-control" placeholder="John Doe" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Department" class="form-label">Department <small class="text-muted">(optional)</small></label>
+                    <input asp-for="Department" class="form-control" placeholder="Engineering, HR…" />
+                </div>
+                <div class="col-12">
+                    <label asp-for="Email" class="form-label required"></label>
+                    <input asp-for="Email" class="form-control" placeholder="you@company.com" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Password" class="form-label required"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="ConfirmPassword" class="form-label required"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DateOfBirth" class="form-label required"></label>
+                    <input asp-for="DateOfBirth" type="date" class="form-control" />
+                    <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="AnniversaryDate" class="form-label"></label>
+                    <input asp-for="AnniversaryDate" type="date" class="form-control" />
+                    <span asp-validation-for="AnniversaryDate" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-4">
+                <i class="bi bi-person-plus me-2"></i>Create Account
+            </button>
+
+            <p class="text-center mt-3 mb-0 small">
+                Already have an account?
+                <a asp-action="Login" class="text-decoration-none fw-medium">Sign in</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+
+            const dob = document.getElementById("DateOfBirth");
+
+            const today = new Date();
+
+            // Maximum selectable date = 18 years ago today
+            const maxDate = new Date(
+                today.getFullYear() - 18,
+                today.getMonth(),
+                today.getDate()
+            );
+
+            dob.max = maxDate.toISOString().split("T")[0];
+
+            dob.addEventListener("change", function () {
+
+                if (!this.value) {
+                    this.setCustomValidity("");
+                    return;
+                }
+
+                const selectedDate = new Date(this.value);
+
+                if (selectedDate > maxDate) {
+                    this.setCustomValidity("You must be at least 18 years old.");
+                } else {
+                    this.setCustomValidity("");
+                }
+
+                this.reportValidity();
+            });
+
+        });
+    </script>
+}
+

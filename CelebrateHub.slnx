@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CelebrateHub.Data/CelebrateHub.Data.csproj" Id="a399bfdb-840f-49eb-890f-cf3fc230ca25" />
+  <Project Path="CelebrateHub.Services/CelebrateHub.Services.csproj" Id="5eaf4586-102c-4440-b6ae-7d8aeab89486" />
+  <Project Path="CelebrateHubAPI/CelebrateHubAPI.csproj" />
+  <Project Path="CelebrateHubMVC/CelebrateHubMVC.csproj" Id="c4916251-3783-49a6-bb08-4b02456c643f" />
+</Solution>

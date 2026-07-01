@@ -1,0 +1,113 @@
+﻿@* BirthdayPortal.MVC/Views/Employee/Profile.cshtml *@
+@using CelebrateHub.Services.DTOs
+@model EmployeeDto
+@{
+    ViewData["Title"] = $"{Model.Name}'s Profile"; Layout = "_Layout";
+}
+
+<div class="row g-4">
+    <!-- Profile Card -->
+    <div class="col-md-4">
+        <div class="card portal-card text-center h-100">
+            <div class="card-body py-4">
+                <div class="profile-avatar mx-auto mb-3">@Model.Name.Substring(0, 1)</div>
+                <h5 class="mb-1">@Model.Name</h5>
+                <div class="text-muted mb-2">@Model.Email</div>
+                <span class="badge @(Model.Role == "Admin" ? "bg-danger" : "bg-primary") mb-3">@Model.Role</span>
+                @if (!string.IsNullOrEmpty(Model.Department))
+                {
+                    <div><span class="badge bg-light text-dark border">@Model.Department</span></div>
+                }
+
+                <hr />
+
+                @if (User.IsInRole("Admin") ||
+                                Model.EmployeeId.ToString() == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)
+                {
+                    <a asp-action="Edit" asp-route-id="@Model.EmployeeId" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="bi bi-pencil me-1"></i>Edit Profile
+                    </a>
+                    <a asp-controller="Account" asp-action="ChangePassword" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-key me-1"></i>Change Password
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Details -->
+    <div class="col-md-8">
+        <div class="card portal-card mb-3">
+            <div class="card-header portal-card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2 text-primary"></i>Personal Information</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="detail-label">Full Name</div>
+                        <div class="detail-value">@Model.Name</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="detail-label">Email Address</div>
+                        <div class="detail-value">@Model.Email</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="detail-label">Department</div>
+                        <div class="detail-value">@(Model.Department ?? "Not specified")</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="detail-label">Role</div>
+                        <div class="detail-value">@Model.Role</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="detail-label">Member Since</div>
+                        <div class="detail-value">@Model.CreatedDate.ToString("MMMM dd, yyyy")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card portal-card">
+            <div class="card-header portal-card-header">
+                <h6 class="mb-0"><i class="bi bi-calendar-heart me-2 text-pink"></i>Celebration Dates</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="celebration-detail-card celebration-detail-pink">
+                            <div class="celebration-detail-icon">🎂</div>
+                            <div>
+                                <div class="detail-label">Date of Birth</div>
+                                <div class="detail-value fw-semibold">@Model.DateOfBirth.ToString("MMMM dd, yyyy")</div>
+                                <div class="text-muted small">Age @Model.Age</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        @if (Model.AnniversaryDate.HasValue)
+                        {
+                            <div class="celebration-detail-card celebration-detail-purple">
+                                <div class="celebration-detail-icon">💐</div>
+                                <div>
+                                    <div class="detail-label">Anniversary Date</div>
+                                    <div class="detail-value fw-semibold">@Model.AnniversaryDate.Value.ToString("MMMM dd, yyyy")</div>
+                                    <div class="text-muted small">@Model.YearsOfService yr@(Model.YearsOfService != 1 ? "s" : "") of service</div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="celebration-detail-card" style="border: 2px dashed #dee2e6;">
+                                <div class="celebration-detail-icon text-muted">—</div>
+                                <div>
+                                    <div class="detail-label">Anniversary Date</div>
+                                    <div class="text-muted small">Not set</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
