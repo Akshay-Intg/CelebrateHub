@@ -1576,6 +1576,11 @@ a {
 .skeleton-circle {
     border-radius: 50%;
 }
+/* Hide Microsoft Edge's built-in password reveal button */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
 
 /* ============================================================
    RESPONSIVE
