@@ -8,7 +8,9 @@
     // ── Sidebar toggle ───────────────────────────────────────────────────────
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('sidebarToggle');
-
+    if (sidebar && localStorage.getItem('sidebarCollapsed') === 'true') {
+        sidebar.classList.add('collapsed');
+    }
     // Create a backdrop for mobile sidebar overlay
     let backdrop = document.getElementById('sidebarBackdrop');
     if (!backdrop) {
@@ -35,6 +37,8 @@
                 sidebar.classList.contains('mobile-open') ? closeMobileSidebar() : openMobileSidebar();
             } else {
                 sidebar.classList.toggle('collapsed');
+                localStorage.setItem('sidebarCollapsed',
+                    sidebar.classList.contains('collapsed'));
             }
         });
 
