@@ -18,6 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     @* Custom design system *@
     <link rel="stylesheet" href="~/css/portal.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body class="portal-body">
 
@@ -133,6 +134,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="~/js/portal.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
     @* Party reminder popup — only injected for authenticated users *@
@@ -140,6 +142,13 @@
     {
         <partial name="_PartyReminderPopup" />
     }
+    <script>
+        window.addEventListener("pageshow", function () {
+            if (performance.getEntriesByType("navigation")[0]?.type === "back_forward") {
+                window.location.reload();
+            }
+        });
+    </script>
 
 </body>
 </html>

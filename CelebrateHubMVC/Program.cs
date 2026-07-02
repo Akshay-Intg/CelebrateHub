@@ -10,8 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // ── MVC ───────────────────────────────────────────────────────────────────────
 builder.Services.AddControllersWithViews(options =>
 {
-    // Catches the "valid cookie, missing session JWT" stale-login bug
     options.Filters.Add<RequireSessionTokenFilter>();
+    options.Filters.Add<NoCacheAttribute>();
 });
 
 // ── HttpClient for calling the API ────────────────────────────────────────────
