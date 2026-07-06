@@ -128,5 +128,16 @@ namespace CelebrateHubMVC.Controllers
             TempData["Success"] = "Event deactivated.";
             return RedirectToAction("Analytics"); 
         }
+        [HttpPost, Authorize(Policy = "AdminOnly"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendTodaysEmails()
+        {
+            var resp = await _api.PostVoidAsync("email/send-todays-wishes");
+
+            TempData[resp ? "Success" : "Error"] = resp
+                ? "🎉 Birthday and anniversary emails sent successfully!"
+                : "❌ Email sending failed. Check the API logs.";
+
+            return RedirectToAction("Analytics");
+        }
     }
 }

@@ -9,12 +9,17 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;   // ← correct namespace for OpenApiInfo, OpenApiSecurityScheme etc.
 using System.Text;
+using CelebrateHub.Services.Models;
+using CelebrateHubAPI.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
 
 // Repositories
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
@@ -26,6 +31,10 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IPartyService, PartyService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHostedService<BirthdayEmailBackgroundService>();
+
+
 
 // JWT
 var jwtKey = builder.Configuration["Jwt:Key"]
