@@ -9,7 +9,7 @@ namespace CelebrateHubMVC.Models
         ErrorMessage = "Name can contain only letters and spaces.")]
         public string Name { get; set; } = string.Empty;
 
-        [Required, EmailAddress, MaxLength(30), Display(Name = "Email Address")]
+        [Required, EmailAddress, MaxLength(50), Display(Name = "Email Address")]
         public string Email { get; set; } = string.Empty;
 
         [Required, MinLength(6), DataType(DataType.Password),MaxLength(16)]
