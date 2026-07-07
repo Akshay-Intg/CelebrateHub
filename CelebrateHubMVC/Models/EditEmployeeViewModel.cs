@@ -11,7 +11,7 @@ namespace CelebrateHubMVC.Models
         ErrorMessage = "Name can contain only letters and spaces.")]
         public string Name { get; set; } = string.Empty;
 
-        [Required, EmailAddress, Display(Name = "Email Address"),MaxLength(30)]
+        [Required, EmailAddress, Display(Name = "Email Address"),MaxLength(50)]
         public string Email { get; set; } = string.Empty;
 
         [Required, DataType(DataType.Date), Display(Name = "Date of Birth")]

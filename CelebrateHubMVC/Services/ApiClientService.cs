@@ -109,6 +109,12 @@ namespace CelebrateHubMVC.Services
             var resp = await client.DeleteAsync(url);
             return resp.IsSuccessStatusCode;
         }
+        public async Task<bool> PostVoidAsync(string url)
+        {
+            var client = CreateClient();
+            var resp = await client.PostAsync(url, null);
+            return resp.IsSuccessStatusCode;
+        }
 
         /// <summary>Creates an HttpClient and optionally attaches the JWT from session.</summary>
         private HttpClient CreateClient(bool addToken = true)

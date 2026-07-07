@@ -35,24 +35,52 @@
                     <input asp-for="Email" class="form-control" placeholder="you@company.com" />
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
-                <div class="col-md-6">
+                @* <div class="col-md-6">
                     <label asp-for="Password" class="form-label required"></label>
                     <input asp-for="Password" class="form-control" />
                     <span asp-validation-for="Password" class="text-danger small"></span>
-                </div>
+                </div> *@
                 <div class="col-md-6">
+                    <label asp-for="Password" class="form-label required"></label>
+                    <div class="input-group">
+                        <input asp-for="Password" class="form-control" />
+                        <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                            <i class="bi bi-eye" id="passwordEye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+                @* <div class="col-md-6">
                     <label asp-for="ConfirmPassword" class="form-label required"></label>
                     <input asp-for="ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                </div> *@
+                <div class="col-md-6">
+                    <label asp-for="ConfirmPassword" class="form-label required"></label>
+                    <div class="input-group">
+                        <input asp-for="ConfirmPassword" class="form-control" />
+                        <button type="button" class="btn btn-outline-secondary" id="toggleConfirmPassword">
+                            <i class="bi bi-eye" id="confirmPasswordEye"></i>
+                        </button>
+                    </div>
                     <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
                     <label asp-for="DateOfBirth" class="form-label required"></label>
-                    <input asp-for="DateOfBirth" type="date" class="form-control" />
+                    @* <input asp-for="DateOfBirth" type="date" class="form-control" /> *@
+                    <input asp-for="DateOfBirth"
+                           type="text"
+                           class="form-control"
+                           id="DateOfBirth" />
                     <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
                     <label asp-for="AnniversaryDate" class="form-label"></label>
-                    <input asp-for="AnniversaryDate" type="date" class="form-control" />
+                    @* <input asp-for="AnniversaryDate" type="date" class="form-control" /> *@
+                    <input asp-for="AnniversaryDate"
+                           type="text"
+                           class="form-control"
+                           id="AnniversaryDate" />
                     <span asp-validation-for="AnniversaryDate" class="text-danger small"></span>
                 </div>
             </div>
@@ -72,39 +100,97 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-                            document.addEventListener("DOMContentLoaded", function () {
+        //                     document.addEventListener("DOMContentLoaded", function () {
 
-            const dob = document.getElementById("DateOfBirth");
+        //     const dob = document.getElementById("DateOfBirth");
+
+        //     const today = new Date();
+
+        //     Maximum selectable date = 18 years ago today
+        //     const maxDate = new Date(
+        //         today.getFullYear() - 18,
+        //         today.getMonth(),
+        //         today.getDate()
+        //     );
+
+        //     dob.max = maxDate.toISOString().split("T")[0];
+
+        //     dob.addEventListener("change", function () {
+
+        //         if (!this.value) {
+        //             this.setCustomValidity("");
+        //             return;
+        //         }
+
+        //         const selectedDate = new Date(this.value);
+
+        //         if (selectedDate > maxDate) {
+        //             this.setCustomValidity("You must be at least 18 years old.");
+        //         } else {
+        //             this.setCustomValidity("");
+        //         }
+
+        //         this.reportValidity();
+        //     });
+
+        // });
+
+                document.addEventListener("DOMContentLoaded", function () {
 
             const today = new Date();
 
-            // Maximum selectable date = 18 years ago today
-            const maxDate = new Date(
+            const maxDob = new Date(
                 today.getFullYear() - 18,
                 today.getMonth(),
                 today.getDate()
             );
 
-            dob.max = maxDate.toISOString().split("T")[0];
-
-            dob.addEventListener("change", function () {
-
-                if (!this.value) {
-                    this.setCustomValidity("");
-                    return;
-                }
-
-                const selectedDate = new Date(this.value);
-
-                if (selectedDate > maxDate) {
-                    this.setCustomValidity("You must be at least 18 years old.");
-                } else {
-                    this.setCustomValidity("");
-                }
-
-                this.reportValidity();
+            flatpickr("#DateOfBirth", {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "F j, Y",
+                allowInput: false,
+                minDate: "1950-01-01",
+                maxDate: maxDob
             });
 
+            flatpickr("#AnniversaryDate", {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "F j, Y",
+                allowInput: false
+            });
+
+        });
+
+
+
+
+
+                $('#togglePassword').click(function () {
+            const pwd = $('#Password');
+            const eye = $('#passwordEye');
+
+            if (pwd.attr('type') === 'password') {
+                pwd.attr('type', 'text');
+                eye.removeClass('bi-eye').addClass('bi-eye-slash');
+            } else {
+                pwd.attr('type', 'password');
+                eye.removeClass('bi-eye-slash').addClass('bi-eye');
+            }
+        });
+
+        $('#toggleConfirmPassword').click(function () {
+            const pwd = $('#ConfirmPassword');
+            const eye = $('#confirmPasswordEye');
+
+            if (pwd.attr('type') === 'password') {
+                pwd.attr('type', 'text');
+                eye.removeClass('bi-eye').addClass('bi-eye-slash');
+            } else {
+                pwd.attr('type', 'password');
+                eye.removeClass('bi-eye-slash').addClass('bi-eye');
+            }
         });
     </script>
 }

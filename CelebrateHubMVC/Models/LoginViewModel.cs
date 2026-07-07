@@ -4,7 +4,7 @@ namespace CelebrateHubMVC.Models
 {
     public class LoginViewModel
     {
-        [Required, EmailAddress, Display(Name = "Email Address"),MaxLength(30)]
+        [Required, EmailAddress, Display(Name = "Email Address"),MaxLength(50)]
         public string Email { get; set; } = string.Empty;
 
         [Required, DataType(DataType.Password),MaxLength(16)]

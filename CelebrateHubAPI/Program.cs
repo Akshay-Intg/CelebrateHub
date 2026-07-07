@@ -9,12 +9,17 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;   // ← correct namespace for OpenApiInfo, OpenApiSecurityScheme etc.
 using System.Text;
+using CelebrateHub.Services.Models;
+using CelebrateHubAPI.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
 
 // Repositories
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
@@ -26,6 +31,10 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IPartyService, PartyService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHostedService<BirthdayEmailBackgroundService>();
+
+
 
 // JWT
 var jwtKey = builder.Configuration["Jwt:Key"]
@@ -94,21 +103,28 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//    db.Database.Migrate();
+//}
 
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI(c =>
+//    {
+//        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CelebrateHub API v1");
+//        c.RoutePrefix = "swagger";   // access at /swagger
+//    });
+//}
+app.UseSwagger();
+
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CelebrateHub API v1");
-        c.RoutePrefix = "swagger";   // access at /swagger
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "CelebrateHub API v1");
+    c.RoutePrefix = "swagger";
+});
 
 app.UseCors("PortalCors");
 app.UseHttpsRedirection();
