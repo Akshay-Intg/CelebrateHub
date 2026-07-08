@@ -1,9 +1,51 @@
-﻿@* BirthdayPortal.MVC/Views/Dashboard/Index.cshtml *@
+﻿@* Views/Dashboard/Index.cshtml *@
 @using CelebrateHub.Services.DTOs
+@using System.Security.Claims
 @model DashboardDto
 @{
-    ViewData["Title"] = "Dashboard"; Layout = "_Layout";
+    ViewData["Title"] = "Dashboard";
+    Layout = "_Layout";
+
+    var currentUserName = User.FindFirst(ClaimTypes.Name)?.Value ?? "";
+    var firstName = currentUserName.Split(' ').FirstOrDefault() ?? currentUserName;
 }
+
+@* ── Hidden speech context — JS reads these ─────────────────────────────── *@
+<div id="speechContext"
+     data-name="@currentUserName"
+     data-is-birthday="@ViewBag.IsBirthdayToday.ToString().ToLower()"
+     data-is-anniversary="@ViewBag.IsAnniversaryToday.ToString().ToLower()"
+     data-age="@(ViewBag.TurningAge ?? 0)"
+     data-years="@(ViewBag.YearsOfService ?? 0)"
+     data-dept="@(ViewBag.Department ?? "")"
+     style="display:none;">
+</div>
+
+@* ── Celebration Banner — shown by JS when applicable ───────────────────── *@
+<div id="celebrationBanner" class="celebration-banner" style="display:none;">
+    <div class="celebration-banner-inner">
+        <div class="celebration-banner-emoji" id="bannerEmoji">🎂</div>
+        <div class="celebration-banner-text">
+            <div class="celebration-banner-title" id="bannerTitle"></div>
+            <div class="celebration-banner-sub" id="bannerSub">
+                <span id="speechStatus">Preparing your message...</span>
+            </div>
+        </div>
+        <button class="celebration-banner-play" id="playBtn"
+                title="Play wish" onclick="window.CelebrateSpeech.play()">
+            <i class="bi bi-play-circle-fill" id="playIcon"></i>
+        </button>
+        <button class="celebration-banner-close"
+                onclick="document.getElementById('celebrationBanner')
+                         .style.display='none'" title="Close">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+    <div class="celebration-particles" id="particles"></div>
+</div>
+
+@* ── Stats Row ────────────────────────────────────────────────────────── *@
+@* ... rest of your existing dashboard content unchanged ... *@
 
 <!-- ── Stats Row ──────────────────────────────────────────────────────────── -->
 <div class="row g-3 mb-4 stagger">
