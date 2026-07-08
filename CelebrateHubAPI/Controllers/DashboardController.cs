@@ -1,7 +1,9 @@
-﻿using CelebrateHub.Services.DTOs;
+﻿using CelebrateHub.Data.Repositories.Interfaces;
+using CelebrateHub.Services.DTOs;
 using CelebrateHub.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CelebrateHubAPI.Controllers
 {
@@ -11,8 +13,14 @@ namespace CelebrateHubAPI.Controllers
     public class DashboardController : ControllerBase
     {
         private readonly IDashboardService _service;
+        private readonly IEmployeeRepository _empRepo;  // ← add
 
-        public DashboardController(IDashboardService service) => _service = service;
+        public DashboardController(IDashboardService service,
+            IEmployeeRepository empRepo)                // ← add
+        {
+            _service = service;
+            _empRepo = empRepo;
+        }
 
         /// <summary>GET /api/dashboard — Full dashboard data in one call.</summary>
         [HttpGet]
@@ -58,6 +66,46 @@ namespace CelebrateHubAPI.Controllers
 
             var data = await _service.GetUpcomingAnniversariesAsync(days);
             return Ok(ApiResponse<IEnumerable<AnniversaryDto>>.Ok(data));
+        }
+
+
+
+        // Add to CelebrateHubAPI/Controllers/DashboardController.cs
+
+        [HttpGet("my-today")]
+        public async Task<IActionResult> MyToday()
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(idClaim, out int employeeId))
+                return Unauthorized();
+
+            var emp = await _empRepo.GetByIdAsync(employeeId);
+            if (emp == null)
+                return NotFound();
+
+            var today = DateTime.Today;
+
+            bool isBirthday =
+                emp.DateOfBirth.Month == today.Month &&
+                emp.DateOfBirth.Day == today.Day;
+
+            bool isAnniversary =
+                emp.AnniversaryDate.HasValue &&
+                emp.AnniversaryDate.Value.Month == today.Month &&
+                emp.AnniversaryDate.Value.Day == today.Day;
+
+            var dto = new MyTodayDto
+            {
+                IsBirthday = isBirthday,
+                IsAnniversary = isAnniversary,
+                TurningAge = isBirthday ? today.Year - emp.DateOfBirth.Year : 0,
+                YearsOfService = isAnniversary
+                    ? today.Year - emp.AnniversaryDate!.Value.Year
+                    : 0,
+                Department = emp.Department ?? ""
+            };
+
+            return Ok(ApiResponse<MyTodayDto>.Ok(dto));
         }
     }
 }

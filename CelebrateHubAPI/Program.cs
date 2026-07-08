@@ -33,7 +33,12 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IPartyService, PartyService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddHostedService<BirthdayEmailBackgroundService>();
+// Add after your existing AddHttpClient calls (or anywhere before builder.Build())
 
+builder.Services.AddHttpClient("ElevenLabs", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 
 
 // JWT

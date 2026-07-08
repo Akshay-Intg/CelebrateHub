@@ -128,6 +128,8 @@ namespace CelebrateHubMVC.Services
             }
             return client;
         }
+        public Task<MyTodayDto?> GetMyTodayAsync()
+    => GetAsync<MyTodayDto>("dashboard/my-today");
     }
 
     // ── Local response wrapper so we can deserialize ApiResponse<T> ────────────
@@ -136,5 +138,13 @@ namespace CelebrateHubMVC.Services
         public bool Success { get; set; }
         public string Message { get; set; } = string.Empty;
         public T? Data { get; set; }
+    }
+    public class MyTodayDto
+    {
+        public bool IsBirthday { get; set; }
+        public bool IsAnniversary { get; set; }
+        public int TurningAge { get; set; }
+        public int YearsOfService { get; set; }
+        public string Department { get; set; } = string.Empty;
     }
 }
