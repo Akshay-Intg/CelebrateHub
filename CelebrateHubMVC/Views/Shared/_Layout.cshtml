@@ -32,54 +32,6 @@
                     <span class="brand-text">CelebrateHub</span>
                 </div>
 
-                @* <ul class="sidebar-nav">
-                    <li>
-                        <a asp-controller="Dashboard" asp-action="Index"
-                        data-tooltip="Dashboard"
-                           class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
-                            <i class="bi bi-grid-1x2"></i> Dashboard
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-controller="Employee" asp-action="Index"
-                        data-tooltip="Employees"
-                           class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Employee" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
-                            <i class="bi bi-people"></i> Employees
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-controller="Employee" asp-action="Profile"
-                        data-tooltip="My Profile"
-                           class="sidebar-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "active" : "")">
-                            <i class="bi bi-person-circle"></i> My Profile
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-controller="Party" asp-action="Index"
-                        data-tooltip="Party Voting"
-                           class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Party" ? "active" : "")">
-                            <i class="bi bi-balloon-heart"></i> Party Voting
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-controller="Account" asp-action="ChangePassword"
-                        data-tooltip="Change Password"
-                        class="sidebar-link">
-                            <i class="bi bi-key"></i> Change Password
-                        </a>
-                    </li>
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <li class="sidebar-section">Admin</li>
-                        <li>
-                            <a asp-controller="Employee" asp-action="Index"
-                            data-tooltip="Manage Employees"
-                            class="sidebar-link">
-                                <i class="bi bi-person-gear"></i> Manage Employees
-                            </a>
-                        </li>
-                    }
-                </ul> *@
 
                 <ul class="sidebar-nav">
                     <li>
@@ -210,7 +162,9 @@
     @* Party reminder popup — only injected for authenticated users *@
     @if (User.Identity?.IsAuthenticated == true)
     {
-        <partial name="_PartyReminderPopup" />
+        @* <partial name="_PartyReminderPopup" /> *@
+        @await Html.PartialAsync("_PartyReminderPopup")
+        
     }
     <script>
         window.addEventListener("pageshow", function () {

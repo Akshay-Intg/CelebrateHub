@@ -228,3 +228,8 @@
         </div>
     </div>
 </div>
+@section Modals
+{
+    @* <partial name="_TodayCelebrationPopup" model="Model" /> *@
+    @await Html.PartialAsync("_TodayCelebrationPopup",Model)
+}
