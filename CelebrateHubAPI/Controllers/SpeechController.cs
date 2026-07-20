@@ -145,15 +145,13 @@ namespace CelebrateHubAPI.Controllers
                 : "Your entire team";
 
             return
-                $"Happy Work Anniversary, {firstName}! " +
-                $"Today marks {yearsPart} of your journey with us, " +
-                $"and what an amazing journey it has been. " +
-                $"Your dedication, hard work, and positive spirit " +
-                $"inspire everyone around you. " +
-                $"{deptPart} is truly grateful to have you. " +
-                $"Here's to many more years of success together. " +
-                $"Congratulations, and please do celebrate with " +
-                $"the team today!";
+                $"Happy Marriage Anniversary, {firstName}! " +
+                $"Today marks {yearsPart} of your beautiful journey together, " +
+                $"and what a wonderful journey it has been. " +
+                $"May your love, trust, and companionship continue to grow stronger with each passing year. " +
+                $"Wishing you both a lifetime of happiness, good health, and cherished memories. " +
+                $"Here's to many more years of love and togetherness. " +
+                $"Congratulations, and have a wonderful celebration together!";
         }
     }
 }

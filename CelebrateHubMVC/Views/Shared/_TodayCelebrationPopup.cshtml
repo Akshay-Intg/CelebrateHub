@@ -1,0 +1,140 @@
+﻿@using CelebrateHub.Services.DTOs
+@model DashboardDto
+
+@if (Model.TodaysBirthdays.Any() || Model.TodaysAnniversaries.Any())
+{
+    <div class="modal fade"
+         id="todayCelebrationModal"
+         tabindex="-1"
+         aria-labelledby="todayCelebrationModalLabel"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content reminder-modal-content">
+
+                <!-- Header -->
+                <div class="reminder-modal-header">
+                    <div class="reminder-confetti">
+                        🎉 🎂 💐 🎉
+                    </div>
+
+                    <h5 class="reminder-modal-title"
+                        id="todayCelebrationModalLabel">
+                        Today's Celebrations
+                    </h5>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body reminder-modal-body">
+
+                    @if (Model.TodaysBirthdays.Any())
+                    {
+                        <div class="mb-4">
+
+                            <h5 class="text-danger mb-3">
+                                🎂 Today's Birthdays
+                            </h5>
+
+                            @foreach (var b in Model.TodaysBirthdays)
+                            {
+                                <div class="card mb-2 shadow-sm border-0">
+                                    <div class="card-body d-flex align-items-center">
+
+                                        <div class="reminder-avatar me-3">
+                                            @b.Name.Substring(0, 1).ToUpper()
+                                        </div>
+
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold">
+                                                @b.Name
+                                            </div>
+
+                                            <small class="text-muted">
+                                                @(b.Department ?? "No Department")
+                                            </small>
+                                        </div>
+
+                                        <span class="badge bg-danger">
+                                            Turns @b.TurningAge
+                                        </span>
+
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    }
+
+                    @if (Model.TodaysAnniversaries.Any())
+                    {
+                        <div>
+
+                            <h5 class="text-primary mb-3">
+                                💐 Today's Work Anniversaries
+                            </h5>
+
+                            @foreach (var a in Model.TodaysAnniversaries)
+                            {
+                                <div class="card mb-2 shadow-sm border-0">
+                                    <div class="card-body d-flex align-items-center">
+
+                                        <div class="reminder-avatar me-3">
+                                            @a.Name.Substring(0, 1).ToUpper()
+                                        </div>
+
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold">
+                                                @a.Name
+                                            </div>
+
+                                            <small class="text-muted">
+                                                @(a.Department ?? "No Department")
+                                            </small>
+                                        </div>
+
+                                        <span class="badge bg-success">
+                                            @a.YearsCompleting Year@(a.YearsCompleting > 1 ? "s" : "")
+                                        </span>
+
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer reminder-modal-footer">
+
+                    <button class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">
+                        Close
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const modal = document.getElementById("todayCelebrationModal");
+
+            if (modal) {
+
+                setTimeout(function () {
+
+                    new bootstrap.Modal(modal).show();
+
+                }, 600);
+
+            }
+
+        });
+    </script>
+}
